@@ -158,3 +158,44 @@ myapp        baseline   f2c9971a0180   4 hours ago         1.73GB
 => Les points améliorés: * Séparation claire entre le build et le run
                          * Plus sécurisée (Les outils build ne sont pas exposés).
                          
+# Etape 5 : Sécurité et environement de production
+Dans cette étape, j'ai fait 2 amélioration au niveau de la sécurité et la configuration de l'image: 
+1. Ajout de la variable "NODE_ENV=production"
+2. Exécution de l'application avec non-root "node"
+
+# Reconstruction de l'image 
+C:\Users\marie\Documents\tpdockeroptimisation>docker build -t myapp:step5 .
+[+] Building 2.6s (10/10) FINISHED                                                                 docker:desktop-linux
+ => [internal] load build definition from dockerfile                                                               0.0s
+ => => transferring dockerfile: 276B                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:18-alpine                                                  1.8s
+ => [internal] load .dockerignore                                                                                  0.1s
+ => => transferring context: 129B                                                                                  0.1s
+ => [1/5] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8c  0.0s
+ => => resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8c  0.0s
+ => [internal] load build context                                                                                  0.1s
+ => => transferring context: 440B                                                                                  0.1s
+ => CACHED [2/5] WORKDIR /app                                                                                      0.0s
+ => CACHED [3/5] COPY package*.json ./                                                                             0.0s
+ => CACHED [4/5] RUN npm install --only=production                                                                 0.0s
+ => [5/5] COPY . .                                                                                                 0.0s
+ => exporting to image                                                                                             0.2s
+ => => exporting layers                                                                                            0.1s
+ => => exporting manifest sha256:2120c40208ef69c72a0152d8d2dc609d0acdbdfd4f39d0e60af234d21032db84                  0.0s
+ => => exporting config sha256:8f9e0d739eee5a15a8a109b2c10f2b5f65bcdd6389f9665675420ecaee969876                    0.0s
+ => => exporting attestation manifest sha256:50d675e830368b8e3f936ac83f9ca2cc1cf56c32eb06e9f3a929f9c107b729db      0.0s
+ => => exporting manifest list sha256:7d5781beffe8bb965d04f3dec26cdebc0bf310844881a98ce017b73f7b0cd2a4             0.0s
+ => => naming to docker.io/library/myapp:step5                                                                     0.0s
+ => => unpacking to docker.io/library/myapp:step5  
+
+# Vérification et comparaison des images
+C:\Users\marie\Documents\tpdockeroptimisation>docker images myapp
+REPOSITORY   TAG        IMAGE ID       CREATED          SIZE
+myapp        step5      7d5781beffe8   15 seconds ago   204MB
+myapp        step4      8dec92515449   23 minutes ago   204MB
+myapp        step3      99775ecb9263   38 minutes ago   204MB
+myapp        step2      e95093b8412a   2 hours ago      233MB
+myapp        baseline   f2c9971a0180   4 hours ago      1.73GB
+
+=> Les points améliorés: * L'application ne tourne plus en root.
+                         * Configuration explicite en mode production.
