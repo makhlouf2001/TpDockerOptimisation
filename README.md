@@ -76,3 +76,41 @@ myapp        baseline   f2c9971a0180   3 hours ago          1.73GB
                          * Installation que des dépendances de production
                          * Meilleure gestion du cache Docker
 
+# Etape 3: Ajout d'un .dockerignore
+Dans cette étape, j'ai ajouté un fichier ".dockerignore" à fin de réduire le contexte enovoyé à Docker à l'instant de build.
+c'est ce qui va éviter l'envoie de "node_modules" qui n'a pas beaucoup de sens vue qu'on a les dépendances déja réinstallées dans l'image, ca va aussi exclure les fichiers Git, logs et les autres fichiers temporaires et par la suite ca va rendre les builds plus rapides.
+
+# Reconstruction de l'image
+C:\Users\marie\Documents\tpdockeroptimisation>docker build -t myapp:step3 .
+[+] Building 2.1s (10/10) FINISHED                                                                 docker:desktop-linux
+ => [internal] load build definition from dockerfile                                                               0.0s
+ => => transferring dockerfile: 186B                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:18-alpine                                                  1.5s
+ => [internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 129B                                                                                  0.0s
+ => [1/5] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8c  0.0s
+ => => resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8c  0.0s
+ => [internal] load build context                                                                                  0.1s
+ => => transferring context: 287B                                                                                  0.1s
+ => CACHED [2/5] WORKDIR /app                                                                                      0.0s
+ => CACHED [3/5] COPY package*.json ./                                                                             0.0s
+ => CACHED [4/5] RUN npm install --only=production                                                                 0.0s
+ => [5/5] COPY . .                                                                                                 0.0s
+ => exporting to image                                                                                             0.2s
+ => => exporting layers                                                                                            0.1s
+ => => exporting manifest sha256:12daf6ec167e540b88b417c5f075835a06b1fca1ae64c8e8cda5e2f3a1a8f5ff                  0.0s
+ => => exporting config sha256:2b5f5552a94ffa6f6e81510f65f1d836f5559fd33e637eef73dd42c71c9301fd                    0.0s
+ => => exporting attestation manifest sha256:772404d8261a4b445d5183b6b9644bef2459a62c555f94ed8ce287a36175c508      0.0s
+ => => exporting manifest list sha256:99775ecb9263bc18bbcb024c5777706f793195da69a1c6e2c425f329866bfd3c             0.0s
+ => => naming to docker.io/library/myapp:step3                                                                     0.0s
+ => => unpacking to docker.io/library/myapp:step3
+
+ # Vérifications et comparaison des images
+ C:\Users\marie\Documents\tpdockeroptimisation>docker images myapp
+REPOSITORY   TAG        IMAGE ID       CREATED             SIZE
+myapp        step3      99775ecb9263   46 seconds ago      204MB
+myapp        step2      e95093b8412a   About an hour ago   233MB
+myapp        baseline   f2c9971a0180   4 hours ago         1.73GB
+
+=> Les points améliorés: * Image un peu plus légère ( de 233MB --> 204MB)
+
