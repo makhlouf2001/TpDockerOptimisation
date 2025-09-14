@@ -114,3 +114,47 @@ myapp        baseline   f2c9971a0180   4 hours ago         1.73GB
 
 => Les points améliorés: * Image un peu plus légère ( de 233MB --> 204MB)
 
+# Etape 4: Multi - stage build
+Dans cette étape, j'ai séparé le build en 2 étapes:
+1. Builder: installation de toutes les dépendances.
+2. Runner : uniquemenet copie du code source et installation des dépendance de production.
+=> Cela permet d'obtenir une image finale plus légere et plus sécurisée car elle ne contient pas les outils de développement.
+
+# Reconstruction de l'image aprés modification du code dockerfile
+C:\Users\marie\Documents\tpdockeroptimisation>docker build -t myapp:step4 .
+[+] Building 6.6s (12/12) FINISHED                                                                 docker:desktop-linux
+ => [internal] load build definition from dockerfile                                                               0.1s
+ => => transferring dockerfile: 359B                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:18-alpine                                                  1.5s
+ => [internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 129B                                                                                  0.0s
+ => [builder 1/5] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35c  0.0s
+ => => resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8c  0.0s
+ => [internal] load build context                                                                                  0.0s
+ => => transferring context: 10.37kB                                                                               0.0s
+ => CACHED [builder 2/5] WORKDIR /app                                                                              0.0s
+ => CACHED [builder 3/5] COPY package*.json ./                                                                     0.0s
+ => CACHED [runner 4/5] RUN npm install --only=production                                                          0.0s
+ => [builder 4/5] RUN npm install                                                                                  4.6s
+ => [builder 5/5] COPY . .                                                                                         0.1s
+ => [runner 5/5] COPY --from=builder /app/server.js ./                                                             0.0s
+ => exporting to image                                                                                             0.2s
+ => => exporting layers                                                                                            0.1s
+ => => exporting manifest sha256:f433be3d37775ef402df4c78dd929038db292c87d05c861f3f6976799828757e                  0.0s
+ => => exporting config sha256:c78c3e2fe0a54d74f960061dcbf629f216acdc2b465396acf130e7cfa12a1403                    0.0s
+ => => exporting attestation manifest sha256:fd33a016bd10f33daa9fffbda0d084dd3230c3a4d896059db872d6c254de5cde      0.0s
+ => => exporting manifest list sha256:8dec92515449694dfbd068b18d318c550010ecef3019d814d7977cf52beeedec             0.0s
+ => => naming to docker.io/library/myapp:step4                                                                     0.0s
+ => => unpacking to docker.io/library/myapp:step4 
+
+# Vérification et comparaison des images 
+C:\Users\marie\Documents\tpdockeroptimisation>docker images myapp
+REPOSITORY   TAG        IMAGE ID       CREATED             SIZE
+myapp        step4      8dec92515449   9 seconds ago       204MB
+myapp        step3      99775ecb9263   14 minutes ago      204MB
+myapp        step2      e95093b8412a   About an hour ago   233MB
+myapp        baseline   f2c9971a0180   4 hours ago         1.73GB
+
+=> Les points améliorés: * Séparation claire entre le build et le run
+                         * Plus sécurisée (Les outils build ne sont pas exposés).
+                         
