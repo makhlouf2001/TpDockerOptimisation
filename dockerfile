@@ -1,16 +1,4 @@
-#Builder
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-#Runner
-FROM node:18-alpine AS runner
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -18,7 +6,12 @@ COPY package*.json ./
 
 RUN npm install --only=production
 
-COPY --from=builder /app/server.js ./ 
+COPY . .
+
+# Définir l'environnement en production
+ENV NODE_ENV=production
+
+USER node
 
 EXPOSE 3000
 
